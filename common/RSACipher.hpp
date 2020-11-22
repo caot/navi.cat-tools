@@ -1,4 +1,5 @@
 #pragma once
+#include <openssl/opensslv.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
 #include <openssl/bio.h>
@@ -103,11 +104,23 @@ namespace nkg {
 
         [[nodiscard]]
         size_t Bits() const {
+            // https://stackoverflow.com/questions/40549318/error-invalid-use-of-incomplete-type-rsa-aka-struct-rsa-st-in-openssl-1-1
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+            /* OpenSSL 1.0.2 and below (old code) */
             if (Get()->n == nullptr) {
                 throw Exception(NKG_CURRENT_SOURCE_FILE(), NKG_CURRENT_SOURCE_LINE(), TEXT("RSA modulus has not been set."));
-            } else {
+            }
+            else {
                 return BN_num_bits(Get()->n);
             }
+#else
+            /* OpenSSL 1.1.0 and above (new code) */
+            if (RSA_get0_n(Get()) == nullptr) {
+                throw Exception(NKG_CURRENT_SOURCE_FILE(), NKG_CURRENT_SOURCE_LINE(), TEXT("RSA modulus has not been set."));
+            } else {
+                return BN_num_bits(RSA_get0_n(Get()));
+            }
+#endif
         }
 
         void GenerateKey(int bits, unsigned int e = RSA_F4) {
