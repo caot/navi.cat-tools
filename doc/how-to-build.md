@@ -9,6 +9,10 @@
    * `capstone`
    * `keystone`
    * `rapidjson`
+   
+   ```console
+   # yum --enablerepo=base-centos-7 install capstone rapidjson
+   ```
 
    If you use Ubuntu, you can install them by:
 
@@ -31,6 +35,7 @@
    ```
 
 2. Your gcc supports C++17 feature.
+   https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/8/html/8.0_release_notes/dts8.0_release
 
 ## 2. Build
 
